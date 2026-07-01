@@ -1,37 +1,95 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import UserMenu from "@/components/auth/UserMenu";
+import { adminDb } from "@/lib/firebase-admin";
+import Link from "next/link";
+
+async function getStats() {
+  const [coursesSnap, usersSnap] = await Promise.all([
+    adminDb.collection("courses").get(),
+    adminDb.collection("users").get(),
+  ]);
+
+  const totalCourses  = coursesSnap.size;
+  const totalStudents = usersSnap.docs.filter(
+    (d) => d.data().role === "student"
+  ).length;
+  const published = coursesSnap.docs.filter(
+    (d) => d.data().published
+  ).length;
+
+  return { totalCourses, totalStudents, published };
+}
 
 export default async function AdminPage() {
-  const session = await auth();
-  if (!session || session.user.role !== "admin") redirect("/dashboard");
+  const stats = await getStats();
 
   return (
-    <div className="min-h-screen bg-neutral-950">
-      <nav className="border-b border-neutral-800 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="font-mono font-bold text-lg tracking-widest">
-            <span style={{ color: "#d4a017" }}>BRACU</span>
-            <span className="text-white">STREAM</span>
-          </span>
-          <span className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded font-mono">
-            ADMIN
-          </span>
-        </div>
-        <UserMenu user={session.user} />
-      </nav>
-      <main className="max-w-4xl mx-auto px-6 py-16 text-center">
-        <div className="text-5xl mb-6">🛠️</div>
-        <h1 className="text-2xl font-semibold text-white mb-3">
-          Admin Panel
-        </h1>
-        <p className="text-neutral-400 text-sm mb-2">
-          Signed in as <span className="text-neutral-300 font-mono">{session.user.email}</span>
-        </p>
+    <div className="p-8">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-white mb-1">Admin Dashboard</h1>
         <p className="text-neutral-500 text-sm">
-          Module 01 complete ✅ — Admin course management coming in Module 07.
+          Manage courses, playlists and materials
         </p>
-      </main>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+        {[
+          { label: "Total Courses",    value: stats.totalCourses,  icon: "📚" },
+          { label: "Published",        value: stats.published,     icon: "✅" },
+          { label: "Students",         value: stats.totalStudents, icon: "👥" },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5"
+          >
+            <div className="text-2xl mb-2">{s.icon}</div>
+            <div className="text-3xl font-bold text-white mb-1">{s.value}</div>
+            <div className="text-sm text-neutral-500">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Quick actions */}
+      <div className="mb-8">
+        <h2 className="text-sm font-medium text-neutral-500 uppercase tracking-widest mb-4">
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            {
+              href:  "/admin/courses/new",
+              icon:  "➕",
+              title: "Add New Course",
+              desc:  "Create a BRACU or external course",
+            },
+            {
+              href:  "/admin/courses",
+              icon:  "📚",
+              title: "Manage Courses",
+              desc:  "Edit courses, add playlists and faculties",
+            },
+            {
+              href:  "/admin/students",
+              icon:  "👥",
+              title: "View Students",
+              desc:  "See all registered students",
+            },
+          ].map((action) => (
+            <Link
+              key={action.href}
+              href={action.href}
+              className="flex items-start gap-4 p-5 bg-neutral-900 border border-neutral-800 hover:border-neutral-600 rounded-2xl transition-all group"
+            >
+              <span className="text-2xl">{action.icon}</span>
+              <div>
+                <p className="text-sm font-semibold text-white group-hover:text-amber-400 transition-colors mb-1">
+                  {action.title}
+                </p>
+                <p className="text-xs text-neutral-500">{action.desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

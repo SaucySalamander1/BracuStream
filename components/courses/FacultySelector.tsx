@@ -47,16 +47,16 @@ export default function FacultySelector({ courseId, faculties, course }: Props) 
               onClick={() => setSelected(faculty.id)}
               className="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-150"
               style={{
-                background: selected === faculty.id ? `${course.accentColor}33` : "#1a1a1a",
+                background:  selected === faculty.id ? `${course.accentColor}33` : "#1a1a1a",
                 borderColor: selected === faculty.id ? course.accentColor : "#2a2a2a",
-                color: selected === faculty.id ? "#fff" : "#888",
+                color:       selected === faculty.id ? "#fff" : "#888",
               }}
             >
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-none"
                 style={{
                   background: selected === faculty.id ? course.accentColor : "#2a2a2a",
-                  color: selected === faculty.id ? "#000" : "#666",
+                  color:      selected === faculty.id ? "#000" : "#666",
                 }}
               >
                 {faculty.name.charAt(0)}
@@ -100,6 +100,8 @@ export default function FacultySelector({ courseId, faculties, course }: Props) 
                   <span className="text-white">{activeFaculty.section ?? "—"}</span>
                 </div>
               </div>
+
+              {/* Start Watching */}
               <button
                 onClick={() => router.push(`/courses/${courseId}/watch/${activeFaculty.id}`)}
                 className="w-full py-3 rounded-xl font-semibold text-sm text-black transition-colors"
@@ -107,8 +109,17 @@ export default function FacultySelector({ courseId, faculties, course }: Props) 
               >
                 ▶ Start Watching
               </button>
+
+              {/* Course Modules */}
+              <button
+                onClick={() => router.push(`/courses/${courseId}/learn`)}
+                className="w-full mt-2 py-2.5 rounded-xl font-medium text-sm text-white bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 transition-colors"
+              >
+                📚 Course Modules
+              </button>
+
               
-                <a href={activeFaculty.playlistUrl}
+               <a href={activeFaculty.playlistUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full mt-2 py-2.5 rounded-xl font-medium text-xs text-neutral-400 hover:text-white border border-neutral-800 hover:border-neutral-600 transition-colors flex items-center justify-center gap-2"

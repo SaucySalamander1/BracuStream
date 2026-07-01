@@ -74,3 +74,58 @@ export async function getVideos(courseId: string, facultyId: string) {
     };
   });
 }
+
+export async function getModules(courseId: string) {
+  const snap = await adminDb
+    .collection("courses")
+    .doc(courseId)
+    .collection("modules")
+    .orderBy("order")
+    .get();
+
+  return snap.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id:          doc.id,
+      courseId,
+      title:       data.title ?? "",
+      week:        data.week ?? 0,
+      description: data.description ?? "",
+      published:   data.published ?? false,
+      order:       data.order ?? 0,
+      createdAt:   data.createdAt?.toDate() ?? new Date(),
+      updatedAt:   data.updatedAt?.toDate() ?? new Date(),
+    };
+  });
+}
+
+export async function getModuleItems(courseId: string, moduleId: string) {
+  const snap = await adminDb
+    .collection("courses")
+    .doc(courseId)
+    .collection("modules")
+    .doc(moduleId)
+    .collection("items")
+    .orderBy("order")
+    .get();
+
+  return snap.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id:          doc.id,
+      moduleId,
+      courseId,
+      type:        data.type ?? "resource",
+      title:       data.title ?? "",
+      description: data.description ?? "",
+      youtubeId:   data.youtubeId ?? null,
+      facultyId:   data.facultyId ?? null,
+      duration:    data.duration ?? null,
+      storageUrl:  data.storageUrl ?? null,
+      sizeKb:      data.sizeKb ?? null,
+      externalUrl: data.externalUrl ?? null,
+      order:       data.order ?? 0,
+      createdAt:   data.createdAt?.toDate() ?? new Date(),
+    };
+  });
+}

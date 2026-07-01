@@ -81,6 +81,49 @@ export interface Supervisor {
   image?: string;
 }
 
+// ── Course Module ─────────────────────────────────────────────
+export interface CourseModule {
+  id: string;
+  courseId: string;
+  title: string;
+  week: number;
+  description: string;
+  published: boolean;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ── Module Item (content inside a module) ─────────────────────
+export type ModuleItemType =
+  | "video"
+  | "slide"
+  | "note"
+  | "assignment"
+  | "lab"
+  | "quiz"
+  | "resource";
+
+export interface ModuleItem {
+  id: string;
+  moduleId: string;
+  courseId: string;
+  type: ModuleItemType;
+  title: string;
+  description?: string;
+  // For videos — links to existing faculty video
+  youtubeId?: string;
+  facultyId?: string;
+  duration?: string;
+  // For files — uploaded to Firebase Storage
+  storageUrl?: string;
+  sizeKb?: number;
+  // For external resources
+  externalUrl?: string;
+  order: number;
+  createdAt: Date;
+}
+
 import "next-auth";
 import "next-auth/jwt";
 
