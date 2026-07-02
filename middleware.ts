@@ -4,11 +4,24 @@ import type { NextRequest } from "next/server";
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const token = req.cookies.get("authjs.session-token") || 
-                req.cookies.get("__Secure-authjs.session-token");
+  const token =
+    req.cookies.get("authjs.session-token") ||
+    req.cookies.get("__Secure-authjs.session-token");
 
-  const publicPaths = ["/auth/signin", "/auth/error", "/api/auth"];
-  if (publicPaths.some((p) => pathname.startsWith(p))) {
+  // ── Public routes ─────────────────────────────────────────
+  const isPublic =
+    pathname === "/" ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/courses");
+
+  // These need login even under /courses
+  const requiresAuth =
+    pathname.includes("/watch") ||
+    pathname.includes("/learn") ||
+    pathname.includes("/materials");
+
+  if (isPublic && !requiresAuth) {
     if (token && pathname === "/auth/signin") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
