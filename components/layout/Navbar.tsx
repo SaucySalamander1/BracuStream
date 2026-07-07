@@ -26,6 +26,7 @@ const DEPARTMENTS = [
 const NAV_LINKS = [
   { label: "Browse",    href: "/dashboard" },
   { label: "Research",  href: "/research"  },
+  { label: "Progress",  href: "/dashboard/analytics" },
 ];
 
 export default function Navbar({ user }: Props) {
