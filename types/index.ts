@@ -33,8 +33,10 @@ export interface Course {
   category?: string;
   provider?: string;
   level?: "Beginner" | "Intermediate" | "Advanced";
-}
 
+  // Optional search tags
+  tags?: string[];
+}
 export interface Faculty {
   id: string;
   courseId: string;
