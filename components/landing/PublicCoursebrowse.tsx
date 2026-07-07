@@ -224,3 +224,5 @@ export default function PublicCourseBrowse({ courses, isLoggedIn }: Props) {
     </div>
   );
 }
+
+// some new changes
