@@ -36,6 +36,9 @@ export interface Course {
 
   // Optional search tags
   tags?: string[];
+  labCourse?: boolean; 
+  prerequisites?: string[];
+  thumbnailUrl?: string;
 }
 export interface Faculty {
   id: string;
